@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MatchupRequest {
+  id        String   @id @default(cuid())
+  question  String
+  createdAt DateTime @default(now())
+
+  result    MatchupResult?
+}
+
+model MatchupResult {
+  id          String   @id @default(cuid())
+  requestId   String   @unique
+  answerJson  Json
+  createdAt   DateTime @default(now())
+
+  request     MatchupRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}

@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     container_name: ai_sports_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app_password
