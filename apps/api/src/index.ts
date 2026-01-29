@@ -1,8 +1,10 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
+const MODEL_URL = process.env.MODEL_URL ?? "http://127.0.0.1:8000";
 const prisma = new PrismaClient();
 const app = express();
 
@@ -30,14 +32,31 @@ app.post("/matchups", async (req, res) => {
   });
 
   // stub "model output" for now
-  const answer = {
-    pick: "TBD",
-    confidence: 0.5,
-    reasons: ["Stub response — model service next"],
-    counter: [],
-    context_notes: [],
-    sources: [],
-  };
+  let answer: any;
+
+  try {
+    const resp = await fetch(`${MODEL_URL}/infer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: parsed.data.question }),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Model service error: ${resp.status}`);
+    }
+
+    answer = await resp.json();
+  } catch (e) {
+    // fallback if model service is down
+    answer = {
+      pick: "TBD",
+      confidence: 0.5,
+      reasons: ["Model service unavailable, using fallback"],
+      counter: [],
+      context_notes: [],
+      sources: [],
+    };
+  }
 
   const result = await prisma.matchupResult.create({
     data: {

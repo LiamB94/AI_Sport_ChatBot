@@ -24,3 +24,8 @@ pnpm-debug.log*
 
 # docker volumes (just in case)
 **/pgdata
+
+# Python
+**/.venv/
+**/__pycache__/
+*.pyc
