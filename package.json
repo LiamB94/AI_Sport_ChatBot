@@ -6,6 +6,15 @@
     "dev:db": "docker compose up -d db",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f db",
-    "db:reset": "docker compose down -v && docker compose up -d db"
+    "db:reset": "docker compose down -v && docker compose up -d db",
+
+    "dev:api": "npm --workspace @ai-sport/api run dev",
+    "dev:web": "npm --workspace web run dev",
+    "dev:model": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"cd apps/model; if (Test-Path .venv\\Scripts\\Activate.ps1) { . .venv\\Scripts\\Activate.ps1 }; uvicorn src.main:app --reload --port 8000\"",
+
+    "dev": "concurrently -n DB,MODEL,API,WEB -c auto \"npm run dev:db\" \"npm run dev:model\" \"npm run dev:api\" \"npm run dev:web\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }
