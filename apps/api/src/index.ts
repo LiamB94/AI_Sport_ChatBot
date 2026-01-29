@@ -68,6 +68,18 @@ app.post("/matchups", async (req, res) => {
   res.status(201).json({ request, result });
 });
 
+app.get("/matchups", async (req, res) => {
+  const limit = Math.min(Number(req.query.limit ?? 20), 100);
+
+  const rows = await prisma.matchupRequest.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: { result: true },
+  });
+
+  res.json(rows);
+});
+
 app.get("/matchups/:id", async (req, res) => {
   const row = await prisma.matchupRequest.findUnique({
     where: { id: req.params.id },
